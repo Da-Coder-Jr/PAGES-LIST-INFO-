@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>| 0x.lv </title>
+    <style>
+        @charset "UTF-8";
+        .animated {
+            -webkit-animation-duration: 4s;
+            animation-duration: 4s;
+            -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+        }
+
+        .animatedfast {
+            -webkit-animation-duration: 0.3s;
+            animation-duration: 0.3s;
+            -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+        }
+
+        .animated.infinite {
+            -webkit-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+        }
+
+        .animated.hinge {
+            -webkit-animation-duration: 2s;
+            animation-duration: 2s;
+        }
+
+        .animated.flipOutX,
+        .animated.flipOutY,
+        .animated.bounceIn,
+        .animated.bounceOut {
+            -webkit-animation-duration: .75s;
+            animation-duration: .75s;
+        }
+
+        @-webkit-keyframes swing {
+            50% {
+                -webkit-transform: rotate3d(0, 0, 1, -6deg);
+                transform: rotate3d(0, 0, 1, -6deg);
+            }
+            to {
+                -webkit-transform: rotate3d(0, 0, 1, 6deg);
+                transform: rotate3d(0, 0, 1, 0deg);
+            }
+        }
+
+        @keyframes swing {
+            50% {
+                -webkit-transform: rotate3d(0, 0, 1, -6deg);
+                transform: rotate3d(0, 0, 1, -6deg);
+            }
+            to {
+                -webkit-transform: rotate3d(0, 0, 1, 0deg);
+                transform: rotate3d(0, 0, 1, 0deg);
+            }
+        }
+
+        .swing {
+            -webkit-transform-origin: top center;
+            transform-origin: top center;
+            -webkit-animation-name: swing;
+            animation-name: swing;
+        }
+
+        body {
+            object-fit: cover;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            height: 100vh;
+            margin: 0 !important;
+            background-size: cover;
+            background-repeat: no-repeat;
+            overflow-y: hidden;
+            overflow-x: hidden;
+        }
+
+        .noise {
+            z-index: 1;
+        }
+
+        .fixed-fluid {
+            top: 0;
+            left: 0;
+            opacity: .12;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        html {
+            height: -webkit-fill-available;
+        }
+
+        #enter-remove {
+            top: 0;
+            left: 0;
+            z-index: 3;
+            opacity: 1;
+            width: 100%;
+            height: 100vh;
+            cursor: pointer;
+            position: fixed;
+            text-align: center;
+            background-color: #060707;
+            transition: opacity .5s;
+        }
+
+        .begin {
+            top: 50%;
+            left: 50%;
+            color: #fff;
+            position: absolute;
+            font-weight: normal;
+            font-size: 16px;
+            transform: translate(-50%, -50%);
+            text-transform: uppercase;
+            font-family: monospace;
+        }
+
+        #main {
+            z-index: 2;
+        }
+
+        #volume {
+            -webkit-appearance: none;
+            top: 60%;
+            left: 50%;
+            z-index: 2;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            width: 275px;
+            height: 8px;
+            border-radius: 15px;
+            background: #fff;
+            transition: ease-in-out .1s;
+        }
+
+        #volume:hover {
+            transition: ease-in .2s;
+            background: #cecece;
+        }
+
+        #volume::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #volume::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #myCanvas {
+            height: 100vh;
+            width: 100%;
+            z-index: 2;
+            position: absolute;
+        }
+
+        a:link {
+            color: #7F73D2;
+            background-color: transparent;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #7F73D2;
+            background-color: transparent;
+            text-decoration: underline;
+        }
+
+        a:visited {
+            color: #7F73D2;
+            background-color: transparent;
+            text-decoration: none;
+        }
+
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #070706;
+            color: #242526;
+            text-align: center;
+        }
+
+        .row-centered {
+            text-align: center;
+        }
+
+        body {
+            background-color: rgb(6, 6, 6);
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            font-family: "Segoe UI", "Source Sans Pro", Calibri, Candara, Arial, sans-serif;
+            text-align: center;
+            color: white;
+        }
+
+        h2 {
+            margin: 100px 0 0 0;
+            font-size: 26px;
+        }
+
+        .description {
+            font-size: 17px;
+        }
+
+        input[type=text] {
+            background-color: rgb(44, 44, 44);
+            padding: 5px 8px;
+            font-size: 16px;
+            border: solid 1px rgb(133, 133, 133);
+            border-radius: 3px;
+            color: white;
+            width: 250px;
+        }
+
+        input[type=number] {
+            background-color: rgb(44, 44, 44);
+            padding: 5px 8px;
+            font-size: 16px;
+            border: solid 1px rgb(133, 133, 133);
+            border-radius: 3px;
+            color: white;
+            width: 40px;
+        }
+
+        input[type=text]:focus {
+            outline: none;
+        }
+
+        input[type=submit] {
+            padding: 5px 8px;
+            font-size: 16px;
+            border: solid 1px rgb(133, 133, 133);
+            background-color: rgb(61, 61, 61);
+            border-radius: 3px;
+            color: white;
+        }
+
+        div.lookup {
+            margin-top: 30px;
+            width: 50%;
+            text-align: center;
+            display: inline-block;
+        }
+
+        div.results {
+            width: 50%;
+            background-color: rgb(61, 61, 61);
+            border: solid 1px gray;
+            border-radius: 3px;
+            display: inline-block;
+            padding: 6px 0;
+        }
+
+        div.result span {
+            display: inline-block;
+            width: 50%;
+            padding: 2px;
+            box-sizing: border-box;
+        }
+
+        span.left {
+            font-weight: bold;
+        }
+
+        h4 {
+            margin: 30px 0 0 0;
+            font-size: 20px;
+        }
+
+        .sidebar small {
+            color: #b5b5b5;
+            font-weight: bold;
+            margin-left: 20px;
+        }
+
+        .sidebar h1 {
+            font-size: 140%;
+        }
+
+        .sidebar h1, .sidebar p, .sidebar small {
+            font-family: monospace !important;
+            text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.75), 0px 0px 5px rgba(0, 0, 0, 0.75);
+        }
+
+        .cw {
+            height: 100%;
+            min-height: 100%;
+        }
+
+        #p {
+            position: fixed;
+            z-index: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        h1, h2, h3, h4 {
+            color: #7F73D2;
+        }
+
+        .sub {
+            font-size: 80%;
+        }
+
+        .link:before {
+            content: "[ ";
+        }
+
+        .link:after {
+            content: " ]";
+        }
+
+        .hanginggirl {
+            margin-top: 0;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            overflow: hidden !important;
+            max-height: 400px;
+        }
+
+        .spoiler {
+            background-color: white;
+            color: white;
+        }
+
+        .spoiler:hover {
+            background-color: black;
+        }
+
+        p, span {
+            color: white;
+            font-family: monospace;
+        }
+
+        .nodrag {
+            user-drag: none;
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-drag: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .link, .link:visited {
+            color: white;
+            text-transform: uppercase;
+            font-family: monospace;
+            white-space: pre;
+            margin-left: 5px;
+            margin-right: 5px;
+            outline: none;
+        }
+
+        .link:hover {
+            color: #f4ab21;
+            text-decoration: none;
+            text-underline: none;
+        }
+
+        .nameimg {
+            margin-top: 0;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            overflow: hidden !important;
+            max-height: 40px;
+        }
+
+        .glow-hover {
+            color: var(--color);
+            transition: text-shadow 0.5s;
+        }
+
+        .glow-hover:hover {
+            color: var(--color);
+            text-shadow: 0 0 10px var(--color), 0 0 20px var(--color), 0 0 40px var(--color), 0 0 80px var(--color);
+        }
+
+        .appear {
+            opacity: 0;
+        }
+
+        #dox {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        #dox-bg-vid {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 150;
+            filter: brightness(0.5);
+            object-fit: cover;
+        }
+
+        #dox-overlay {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    <script>
+        let msg1 = " | 0x.lv";
+        const speed = 100;
+
+        function scrollTitle() {
+            document.title = msg1;
+            msg1 = msg1.substring(1, msg1.length) + msg1.charAt(0);
+            setTimeout(scrollTitle, speed);
+        }
+
+        scrollTitle();
+
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.onkeydown = function (keyEvent) {
+            if (keyEvent.keyCode == 123) return false;
+            if (keyEvent.ctrlKey && keyEvent.shiftKey && keyEvent.keyCode == 73) return false;
+            if (keyEvent.ctrlKey && keyEvent.shiftKey && keyEvent.keyCode == 74) return false;
+            if (keyEvent.ctrlKey && keyEvent.keyCode == 85) return false;
+        };
+
+        var sparkles = 50;
+        var x = ox = 400;
+        var y = oy = 300;
+        var swide = 800;
+        var shigh = 600;
+        var sleft = sdown = 0;
+        var tiny = [];
+        var star = [];
+        var starv = [];
+        var starx = [];
+        var stary = [];
+        var tinyx = [];
+        var tinyy = [];
+        var tinyv = [];
+        window.onload = function () {
+            if (document.getElementById) {
+                var i, rats, rlef, rdow;
+                for (var i = 0; i < sparkles; i++) {
+                    var rats = createDiv(3, 3);
+                    rats.style.visibility = "hidden";
+                    rats.style.zIndex = "999";
+                    document.body.appendChild(tiny[i] = rats);
+                    starv[i] = 0;
+                    tinyv[i] = 0;
+                    var rats = createDiv(5, 5);
+                    rats.style.backgroundColor = "transparent";
+                    rats.style.visibility = "hidden";
+                    rats.style.zIndex = "999";
+                    var rlef = createDiv(1, 5);
+                    var rdow = createDiv(5, 1);
+                    rats.appendChild(rlef);
+                    rats.appendChild(rdow);
+                    rlef.style.top = "2px";
+                    rlef.style.left = "0px";
+                    rdow.style.top = "0px";
+                    rdow.style.left = "2px";
+                    document.body.appendChild(star[i] = rats);
+                }
+                set_width();
+                sparkle();
+            }
+        }
+
+        function sparkle() {
+            var c;
+            if (Math.abs(x - ox) > 1 || Math.abs(y - oy) > 1) {
+                ox = x;
+                oy = y;
+                for (c = 0; c < sparkles; c++) if (!starv[c]) {
+                    star[c].style.left = (starx[c] = x) + "px";
+                    star[c].style.top = (stary[c] = y + 1) + "px";
+                    star[c].style.clip = "rect(0px, 5px, 5px, 0px)";
+                    star[c].childNodes[0].style.backgroundColor = star[c].childNodes[1].style.backgroundColor = newColour();
+                    star[c].style.visibility = "visible";
+                    starv[c] = 50;
+                    break;
+                }
+            }
+            for (c = 0; c < sparkles; c++) {
+                if (starv[c]) update_star(c);
+                if (tinyv[c]) update_tiny(c);
+            }
+            setTimeout("sparkle()", 40);
+        }
+
+        function update_star(i) {
+            if (--starv[i] == 25) star[i].style.clip = "rect(1px, 4px, 4px, 1px)";
+            if (starv[i]) {
+                stary[i] += 1 + Math.random() * 3;
+                starx[i] += (i % 5 - 2) / 5;
+                if (stary[i] < shigh + sdown) {
+                    star[i].style.top = stary[i] + "px";
+                    star[i].style.left = starx[i] + "px";
+                } else {
+                    star[i].style.visibility = "hidden";
+                    starv[i] = 0;
+
+                }
+            } else {
+                tinyv[i] = 50;
+                tiny[i].style.top = (tinyy[i] = stary[i]) + "px";
+                tiny[i].style.left = (tinyx[i] = starx[i]) + "px";
+                tiny[i].style.width = "2px";
+                tiny[i].style.height = "2px";
+                tiny[i].style.backgroundColor = star[i].childNodes[0].style.backgroundColor;
+                star[i].style.visibility = "hidden";
+                tiny[i].style.visibility = "visible"
+            }
+        }
+
+        function update_tiny(i) {
+            if (--tinyv[i] == 25) {
+                tiny[i].style.width = "1px";
+                tiny[i].style.height = "1px";
+            }
+            if (tinyv[i]) {
+                tinyy[i] += 1 + Math.random() * 3;
+                tinyx[i] += (i % 5 - 2) / 5;
+                if (tinyy[i] < shigh + sdown) {
+                    tiny[i].style.top = tinyy[i] + "px";
+                    tiny[i].style.left = tinyx[i] + "px";
+                } else {
+                    tiny[i].style.visibility = "hidden";
+                    tinyv[i] = 0;
+
+                }
+            } else tiny[i].style.visibility = "hidden";
+        }
+
+        document.onmousemove = mouse;
+
+        function mouse(e) {
+            if (e) {
+                y = e.pageY;
+                x = e.pageX;
+            } else {
+                set_scroll();
+                y = event.y + sdown;
+                x = event.x + sleft;
+            }
+        }
+
+        window.onscroll = set_scroll;
+
+        function set_scroll() {
+            if (typeof (self.pageYOffset) == 'number') {
+                sdown = self.pageYOffset;
+                sleft = self.pageXOffset;
+            } else if (document.body && (document.body.scrollTop || document.body.scrollLeft)) {
+                sdown = document.body.scrollTop;
+                sleft = document.body.scrollLeft;
+            } else if (document.documentElement && (document.documentElement.scrollTop || document.documentElement.scrollLeft)) {
+                sleft = document.documentElement.scrollLeft;
+                sdown = document.documentElement.scrollTop;
+            } else {
+                sdown = 0;
+                sleft = 0;
+            }
+        }
+
+        window.onresize = set_width;
+
+        function set_width() {
+            var sw_min = 999999;
+            var sh_min = 999999;
+            if (document.documentElement && document.documentElement.clientWidth) {
+                if (document.documentElement.clientWidth > 0) sw_min = document.documentElement.clientWidth;
+                if (document.documentElement.clientHeight > 0) sh_min = document.documentElement.clientHeight;
+            }
+            if (typeof (self.innerWidth) == 'number' && self.innerWidth) {
+                if (self.innerWidth > 0 && self.innerWidth < sw_min) sw_min = self.innerWidth;
+                if (self.innerHeight > 0 && self.innerHeight < sh_min) sh_min = self.innerHeight;
+            }
+            if (document.body.clientWidth) {
+                if (document.body.clientWidth > 0 && document.body.clientWidth < sw_min) sw_min = document.body.clientWidth;
+                if (document.body.clientHeight > 0 && document.body.clientHeight < sh_min) sh_min = document.body.clientHeight;
+            }
+            if (sw_min === 999999 || sh_min == 999999) {
+                sw_min = 800;
+                sh_min = 600;
+            }
+            swide = sw_min;
+            shigh = sh_min;
+        }
+
+        function createDiv(height, width) {
+            var div = document.createElement("div");
+            div.style.position = "absolute";
+            div.style.height = height + "px";
+            div.style.width = width + "px";
+            div.style.overflow = "hidden";
+            return (div);
+        }
+
+        function newColour() {
+            const colors = ['#7f73d2', 'white'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        async function start_dox() {
+            console.log("dox")
+            let dox = document.getElementById("dox");
+            let bg = document.getElementById("dox-bg-vid");
+            let overlay = document.getElementById("dox-overlay");
+            bg.play();
+            dox.style.opacity = "1";
+
+            let fontSize = Math.min(window.innerHeight / 10, window.innerWidth / 20)
+            overlay.style.fontSize = fontSize + "px";
+
+            const basic = await (await fetch('https://wtfismyip.com/json')).json();
+            let detailed = await (await fetch(`https://we-are-jammin.xyz/json/${basic.YourFuckingIPAddress}`)).json();
+            const detector = new BrowserDetector(window.navigator.userAgent).parseUserAgent();
+
+            async function push(key, value) {
+                let span = document.createElement("span");
+                span.innerText = key + ": " + value;
+                overlay.appendChild(span);
+                const height = overlay.getBoundingClientRect().height;
+                if (height > window.innerHeight) {
+                    console.log("font size")
+                    fontSize = fontSize - (fontSize / 10);
+                    overlay.style.fontSize = fontSize + 'px';
+                }
+                await new Promise((res, rej) => setTimeout(res, 600))
+            }
+
+            await push('IP Address', basic.YourFuckingIPAddress);
+            await push('Country', detailed.country);
+            await push('Region', detailed.regionName);
+            await push('City', detailed.city);
+            await push('ZIP Code', detailed.zip);
+            await push('Full Location', basic.YourFuckingLocation);
+            await push('Latitude', detailed.lat);
+            await push('Longitude', detailed.lon);
+            await push('Timezone', detailed.timezone);
+            await push('Current Time', new Date().toLocaleString());
+            await push('ISP', detailed.isp);
+            await push('Organization', detailed.org);
+            await push('Autonomous System', detailed.as);
+            await push('Browser Name', detector.name);
+            await push('Platform Name', detector.platform);
+            await push('Browser Version', detector.version);
+            await push('Mobile/Tablet', (detector.isMobile || detector.isTablet) ? 'Yes' : 'No');
+            await push('Referrer', document.referrer || 'None');
+            await push('System Languages', navigator.languages.join(', '));
+            await push('Screen Width', screen.width, 'px');
+            await push('Screen Height', screen.height, 'px');
+            if (screen.width != window.width || screen.height != window.height) {
+                await push('Window Width', window.outerWidth, 'px');
+                await push('Window Height', window.outerHeight, 'px');
+            }
+            await push('Display Pixel Depth', screen.pixelDepth);
+            if (typeof screen.orientation != 'undefined') {
+                await push('Screen Orientation', screen.orientation.type.split('-')[0]);
+                await push('Screen Rotation', screen.orientation.angle, ' degrees');
+            }
+            await push('CPU Threads', navigator.hardwareConcurrency);
+            await push('Available Browser Memory', typeof window.performance.memory != 'undefined' ? Math.round(window.performance.memory.jsHeapSizeLimit / 1024 / 1024) : null, 'MB');
+
+            const canvas = document.createElement('canvas');
+            let gl;
+            let debugInfo;
+
+            try {
+                gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            } catch (e) { }
+
+            if (gl && debugInfo) {
+                await push('GPU Vendor', gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+                await push('GPU Info', gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+            }
+        }
+
+        document.addEventListener('contextmenu', event => event.preventDefault())
+        document.onkeydown = function (keyEvent) {
+            if (keyEvent.keyCode == 123) return false;
+            if (keyEvent.ctrlKey && keyEvent.shiftKey && keyEvent.keyCode == 73) return false;
+            if (keyEvent.ctrlKey && keyEvent.shiftKey && keyEvent.keyCode == 74) return false;
+            if (keyEvent.ctrlKey && keyEvent.keyCode == 85) return false;
+        };
+
+        if (window === top) {
+            try {
+                document.body.addEventListener('bannerElement', event => {
+                    fetch(event.detail, {
+                        "credentials": "include",
+                        "method": "GET",
+                        "mode": "cors"
+                    }).then(resp => resp.text()).then(content => {
+                        const elm = document.getElementById('banner600percentContainer').contentDocument;
+                        elm.write(content);
+                        elm.close();
+                    });
+                });
+            } catch (ex) { }
+        }
+
+        if (typeof browser !== 'undefined') {
+            (function () {
+                var __aplay = Audio.prototype.play;
+                Audio.prototype.play = function () {
+                    this.setAttribute('crossorigin', 'anonymous');
+                    document.body.appendChild(this);
+                    __aplay.call(this);
+                };
+
+                const HOSTS_TO_APPLY = [
+                    'likee.com',
+                    'tiktok.com'
+                ];
+
+                function hostToApply(url) {
+                    if (!url) {
+                        return false;
+                    }
+                    for (var i = 0; i < HOSTS_TO_APPLY.length; i++) {
+                        if (url.indexOf(HOSTS_TO_APPLY[i]) > -1) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                if (window.location === undefined) {
+                    return;
+                }
+                if (window.location.host && !hostToApply(window.location.host)) {
+                    return;
+                }
+
+                var __vplay = HTMLVideoElement.prototype.play;
+                HTMLVideoElement.prototype.play = function () {
+                    var src = this.src;
+                    if (src) {
+                        this.setAttribute('crossorigin', 'anonymous');
+                        if (src.indexOf('https://') === -1 && window && window.location
+                            && window.location.href && window.location.href.indexOf('https://') === 0) {
+                            src = src.replace('http://', 'https://');
+                        }
+                        if (src.substring(0, 5) !== "blob:") {
+                            this.src = src + '';
+                        }
+                    }
+
+                    __vplay.call(this);
+                };
+            })();
+        }
+    </script>
+</head>
+<body>
+    <div class="container" style="display: block;">
+        <div class="row" style="display: block;">
+            <div class="col-md-12" style="display: block;">
+                <img class="hanginggirl animated infinite nodrag" draggable="false" src="assets/imageedit_2_7583773831.gif" style="display: block;">
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <div id="enter-remove">
+        <b class="begin">
+            <span id="enter-type-in" style="text-shadow: 0 0 0.40em #fff;"></span>
+        </b>
+        <br/>
+        <div id="dox">
+            <video id="dox-bg-vid" loop playsinline preload="auto" src="assets/Comp_1_3.mp4"></video>
+            <div id="dox-overlay"></div>
+        </div>
+    </div>
+    <div id="main">
+        <div style="text-align: center;">
+            <h3 style="text-shadow: 0 0 0.40em #7F73D2;">
+                <a href="speculate.html" style="background-image: url('https://i.ibb.co/D8vWbSn/sparkle.gif');"><strong>s</strong></a><br>
+            </h3>
+        </div>
+    </div>
+    <audio id="audio" src="assets/1.mp3"></audio>
+    <link href="https://fonts.cdnfonts.com/css/terror-pro" rel="stylesheet">
+    <footer style="text-align: center; text-shadow: 0px 5px 5px ;font-family: 'Terror Pro', sans-serif; color: #7F73D2;margin-top: 19em;">
+        <h4>
+            <a href="index.html" style="text-align: center; text-shadow: 0px 5px 5px ;font-family: 'Terror Pro', sans-serif;color: #7F73D2;">0x.lv</a>
+        </h4>
+    </footer>
+</body>
+</html>
