@@ -1,0 +1,20 @@
+body{
+    object-fit:cover;
+    background-size:cover;
+    background-repeat:no-repeat;
+    background-position:center center
+}
+
+body{
+    height:100vh;
+    object-fit:cover;
+    margin:0!important;
+    background-size:cover;
+    background-repeat:no-repeat;
+}
+#main{
+    display:block!important
+}
+#video{
+    display:none
+}
